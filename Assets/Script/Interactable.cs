@@ -40,6 +40,7 @@ public class Interactable : MonoBehaviour
         {
             isActive = true;
             SetVisual(true);
+            AchievementManager.Instance?.LogInteraction();
             onActivate?.Invoke();
         }
     }

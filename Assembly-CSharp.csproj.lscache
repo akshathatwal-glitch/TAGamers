@@ -54,9 +54,12 @@ TemporaryDependencyNodeTargetIdentifier=netstandard2.1
 Assets/
  Scenes/Scripts/Playermovement.cs
  Script/
+  AchivementManager.cs
+  DoorController.cs
   Interactable.cs
   MovableBlock.cs
   PlayerController.cs
+  TetherMechanic.cs
 Temp/obj/Debug/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 
 [metadataReferences]

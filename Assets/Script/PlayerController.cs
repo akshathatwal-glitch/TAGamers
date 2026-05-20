@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
             Vector2 dir = (moveInput.sqrMagnitude > 0.01f) ? moveInput : transform.up;
             rb.velocity = dir * dashSpeed;
             isDashing      = true;
+            AchievementManager.Instance?.LogDash(playerName);
             dashTimer      = dashDuration;
             cooldownTimer  = dashCooldown;
         }
