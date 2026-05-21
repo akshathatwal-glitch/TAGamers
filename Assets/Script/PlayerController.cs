@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour
             dashTimer      = dashDuration;
             cooldownTimer  = dashCooldown;
         }
+        DynamicCamera.Instance?.TriggerShake(0.1f, 0.2f);
     }
 
     void HandleActionInput()
