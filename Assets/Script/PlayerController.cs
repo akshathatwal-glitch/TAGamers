@@ -6,16 +6,16 @@ public class PlayerController : MonoBehaviour
     public string playerName = "Player 1";
 
     [Header("Key Bindings")]
-    public KeyCode moveUp     = KeyCode.W;
-    public KeyCode moveDown   = KeyCode.S;
-    public KeyCode moveLeft   = KeyCode.A;
-    public KeyCode moveRight  = KeyCode.D;
-    public KeyCode dashKey    = KeyCode.Space;
-    public KeyCode actionKey  = KeyCode.E;
+    public KeyCode moveUp    = KeyCode.W;
+    public KeyCode moveDown  = KeyCode.S;
+    public KeyCode moveLeft  = KeyCode.A;
+    public KeyCode moveRight = KeyCode.D;
+    public KeyCode dashKey   = KeyCode.Space;
+    public KeyCode actionKey = KeyCode.E;      // kept for reference by PlasmaBeam
 
     [Header("Movement Settings")]
-    public float moveSpeed  = 5f;
-    public float dashSpeed  = 15f;
+    public float moveSpeed    = 5f;
+    public float dashSpeed    = 15f;
     public float dashDuration = 0.15f;
     public float dashCooldown = 1f;
 
@@ -35,9 +35,9 @@ public class PlayerController : MonoBehaviour
     {
         GatherInput();
         HandleDashInput();
-        HandleActionInput();
+        // NOTE: E-key / action handling is done entirely by PlasmaBeam.cs (Player 1)
+        // or MovableBlock.cs (Player 2). No broken layer-mask call here.
 
-        // Count down cooldown
         if (cooldownTimer > 0f)
             cooldownTimer -= Time.deltaTime;
     }
@@ -56,7 +56,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // ── Input gathering ────────────────────────────────────────
     void GatherInput()
     {
         float x = 0f, y = 0f;
@@ -71,35 +70,17 @@ public class PlayerController : MonoBehaviour
     {
         if (!isDashing && cooldownTimer <= 0f && Input.GetKeyDown(dashKey))
         {
-            // Dash in move direction, or face direction if stationary
             Vector2 dir = (moveInput.sqrMagnitude > 0.01f) ? moveInput : transform.up;
-            rb.velocity = dir * dashSpeed;
-            isDashing      = true;
+            rb.velocity   = dir * dashSpeed;
+            isDashing     = true;
+            dashTimer     = dashDuration;
+            cooldownTimer = dashCooldown;
+
             AchievementManager.Instance?.LogDash(playerName);
-            dashTimer      = dashDuration;
-            cooldownTimer  = dashCooldown;
-        }
-        DynamicCamera.Instance?.TriggerShake(0.1f, 0.2f);
-    }
-
-    void HandleActionInput()
-    {
-        if (Input.GetKeyDown(actionKey))
-        {
-            // Check for nearby interactables with a small overlap circle
-            Collider2D hit = Physics2D.OverlapCircle(transform.position, 1.2f,
-                LayerMask.GetMask("Interactable"));
-
-            if (hit != null)
-            {
-                Interactable interactable = hit.GetComponent<Interactable>();
-                if (interactable != null)
-                    interactable.Activate(this);
-            }
+            DynamicCamera.Instance?.TriggerShake(0.1f, 0.2f); // FIX: only shake ON dash, not every frame
         }
     }
 
-    // Draw interaction range in the Scene view
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
